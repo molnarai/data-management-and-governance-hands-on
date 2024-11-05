@@ -16,7 +16,7 @@ COPY generate-certificates.sh /opt/nifi/nifi-current/
 RUN chmod +x /opt/nifi/nifi-current/generate-certificates.sh
 
 # Switch back to nifi user
-USER nifi
+# USER nifi
 
 # Generate certificates
 RUN /opt/nifi/nifi-current/generate-certificates.sh
