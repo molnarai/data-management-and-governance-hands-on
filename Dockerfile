@@ -1,13 +1,28 @@
 FROM apache/nifi:latest
 
-# Install OpenJDK for keytool
+# Switch to root to install packages
 USER root
-RUN apt-get update && apt-get install -y openjdk-21-jdk
-USER nifi
+
+# Install wget to download Amazon Corretto
+RUN apt-get update && apt-get install -y wget
+
+# Download and install Amazon Corretto 21
+RUN wget -O- https://apt.corretto.aws/corretto.key | apt-key add - && \
+    add-apt-repository 'deb https://apt.corretto.aws stable main' && \
+    apt-get update && apt-get install -y java-21-amazon-corretto-jdk
+
+# Set JAVA_HOME environment variable
+ENV JAVA_HOME /usr/lib/jvm/java-21-amazon-corretto
+
+# Add Java binaries to PATH
+ENV PATH $JAVA_HOME/bin:$PATH
 
 # Copy the certificate generation script
 COPY generate-certificates.sh /opt/nifi/nifi-current/
 RUN chmod +x /opt/nifi/nifi-current/generate-certificates.sh
+
+# Switch back to nifi user
+USER nifi
 
 # Generate certificates
 RUN /opt/nifi/nifi-current/generate-certificates.sh
@@ -24,4 +39,5 @@ RUN echo "nifi.web.https.port=8433" >> /opt/nifi/nifi-current/conf/nifi.properti
     echo "nifi.security.truststorePasswd=changeMe123!" >> /opt/nifi/nifi-current/conf/nifi.properties
 
 # Expose the HTTPS port
-EXPOSE 28433
+EXPOSE 8433
+
