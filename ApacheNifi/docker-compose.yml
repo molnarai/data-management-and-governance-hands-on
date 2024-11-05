@@ -24,8 +24,17 @@ services:
   nifi:
     image: apache/nifi:latest
     ports:
-      - "8080:8080"
+      - "28080:8080"
+      - "28433:8433"
     environment:
-      NIFI_WEB_HTTP_PORT: 8080
-    volumes:
-      - ./nifi_data:/opt/nifi/nifi-current
+      NIFI_WEB_HTTP_PORT: '8080'
+      NIFI_WEB_HTTP_HOST: 'compute-05.insight.gsu.edu'
+      NIFI_WEB_HTTPS_PORT: '8433'
+      NIFI_WEB_HTTPS_HOST: "compute-05.insight.gsu.edu"
+      NIFI_WEB_PROXY_HOST: "compute-05.insight.gsu.edu"
+#    volumes:
+#      - ./nifi_data:/opt/nifi/nifi-current/data
+#      - ./nifi_logs:/opt/nifi/nifi-current/logs
+#      - ./nifi_conf:/opt/nifi/nifi-current/conf
+    restart: unless-stopped
+
