@@ -3,17 +3,11 @@ FROM apache/nifi:latest
 # Switch to root to install packages
 USER root
 
-# Install wget to download Amazon Corretto
-RUN apt-get update && apt-get install -y wget
-
-# Download and install Amazon Corretto 21
-RUN wget -O- https://apt.corretto.aws/corretto.key | apt-key add - && \
-    add-apt-repository 'deb https://apt.corretto.aws stable main' && \
-    apt-get update && apt-get install -y java-21-amazon-corretto-jdk
+# Install OpenJDK 21
+RUN apt-get update && apt-get install -y openjdk-21-jdk
 
 # Set JAVA_HOME environment variable
-ENV JAVA_HOME /usr/lib/jvm/java-21-amazon-corretto
-
+ENV JAVA_HOME /usr/lib/jvm/java-21-openjdk-amd64
 # Add Java binaries to PATH
 ENV PATH $JAVA_HOME/bin:$PATH
 
