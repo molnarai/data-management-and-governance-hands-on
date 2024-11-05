@@ -2,6 +2,7 @@ version: '3'
 services:
   nifi:
     build: .
+    container_name: datmangov-nifi
     ports:
       - "28433:8433"
     environment:
