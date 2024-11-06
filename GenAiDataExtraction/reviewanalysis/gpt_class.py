@@ -17,7 +17,8 @@ from openai import OpenAI, OpenAIError
     
 OPEN_AI_CACHE = jp(os.path.dirname(os.path.dirname(__file__)), '..', 'openaicache')
 
-API_KEY_FILE = jp(HOME_DIR, 'credentials', 'openai_pmolnar_gsu_edu.apikey')
+# API_KEY_FILE = jp(HOME_DIR, 'credentials', 'openai_pmolnar_gsu_edu.apikey')
+API_KEY_FILE = '/opt/truist_workshop_openai.apikey'
 
 
 DEFAULT_PROMPT = """Analyze the provided review delimited by <> and extract product-related
@@ -38,13 +39,15 @@ Define a category for the list of key terms delimited by <>. Only output the cat
 
 class GPT:
     
-    def __init__(self, api_key: str = '', open_ai_cache = OPEN_AI_CACHE):
+    def __init__(self, api_key: str = '', open_ai_cache = OPEN_AI_CACHE, create_cache_dir: bool = False):
         if len(api_key) > 0:
             self.api_key = api_key
         else:
             self.api_key = open(API_KEY_FILE, 'r', encoding='utf-8').read().strip()
             
         self.open_ai_cache = open_ai_cache
+        if not os.path.isdir(create_cache_dir):
+            os.makedirs(self.open_ai_cache, exist_ok = True)
         assert os.path.isdir(self.open_ai_cache), f"Cache directory does not exist: {self.open_ai_cache}"
         
         self.client = OpenAI(
@@ -170,7 +173,8 @@ class GPT:
             
         return contdata
             
-    
+    def query(self, prompt: str, prompt_label: str = 'default'):
+        return self.__create_or_cache(prompt, prompt_label)
     
     def analyze_review(self, review: str, prompt_label:str = 'default') -> pd.DataFrame:
 #         prompt = f"""Analyze the provided review delimited by <> and extract product-related
